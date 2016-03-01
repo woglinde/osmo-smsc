@@ -32,9 +32,8 @@ script:
 - bash docker/docker-image.sh
 - bash integration-tests/integration-tests.sh
 - sh ./docker/debian-build.sh
-
-after_success:
 - bash deploy/deploy.sh
+
 after_failure:
 - bash integration-tests/after_failure.sh
 

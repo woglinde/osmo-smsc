@@ -11,15 +11,19 @@ cat <<- EOF > ~/.oscrc
 apiurl = https://api.opensuse.org
 
 [https://api.opensuse.org]
-user = woglinde
+user = ${OBS_USER}
 pass = ${OBS_PASS}
 EOF
 
-osc co home:woglinde osmo-smsc
-cd home:woglinde/osmo-smsc/
+OBS_HOME="home:${OBS_USER}/osmo-smsc/"
+
+pwd
+osc co home:${OBS_USER} osmo-smsc
+pushd .
+cd ${OBS_HOME}
 osc rm *.dsc *.tar.gz *.changes
-cd
-cp *.dsc *.tar.gz *.changes home:woglinde/osmo-smsc/
-cd home:woglinde/osmo-smsc/
+popd
+cp *.dsc *.tar.gz *.changes ${OBS_HOME}
+cd ${OBS_HOME}
 osc add *.dsc *.tar.gz *.changes
 osc ci -m "new build"

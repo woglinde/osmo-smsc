@@ -2,8 +2,16 @@
 
 set -eu
 
-if [ x"${TRAVIS_SMALLTALK_VERSION}" != x"Pharo-4.0" ]; then
+if [ "${TRAVIS_SMALLTALK_VERSION}" != "Pharo-4.0" ]; then
     exit 0
+fi
+
+OBS_PACKAGE="osmo-smsc"
+
+if [ "${TRAVIS_BRANCH}" = "master" ]; then
+    OBS_SUBPROJECT="current"
+else
+    OBS_SUBPROJECT="${TRAVIS_BRANCH}"
 fi
 
 cat <<- EOF > ~/.oscrc
@@ -15,14 +23,21 @@ user = ${OBS_USER}
 pass = ${OBS_PASS}
 EOF
 
-OBS_HOME="home:${OBS_USER}/osmo-smsc/"
+OBS_HOME="home:${OBS_USER}:${OBS_PACKAGE}:${OBS_SUBPROJECT}:latest/${OBS_PACKAGE}"
 
-pwd
-osc co home:${OBS_USER} osmo-smsc
+cd
+# the project is always created via web or cli
+osc co home:${OBS_USER}:${OBS_PACKAGE}:${OBS_SUBPROJECT}:latest ${OBS_PACKAGE}
+
+# rm files if directory is not empty
 pushd .
 cd ${OBS_HOME}
-osc rm *.dsc *.tar.gz *.changes
+if [ `ls | wc -l` != 0 ]; then
+    osc rm *.dsc *.tar.gz *.changes
+fi
 popd
+
+# copy our new files and send them to obs
 cp *.dsc *.tar.gz *.changes ${OBS_HOME}
 cd ${OBS_HOME}
 osc add *.dsc *.tar.gz *.changes

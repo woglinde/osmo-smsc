@@ -25,16 +25,20 @@ EOF
 
 OBS_HOME="home:${OBS_USER}:${OBS_PACKAGE}:${OBS_SUBPROJECT}:latest/${OBS_PACKAGE}"
 
-cd
+cd ../
+ls -la
 # the project is always created via web or cli
 osc co home:${OBS_USER}:${OBS_PACKAGE}:${OBS_SUBPROJECT}:latest ${OBS_PACKAGE}
 
+pushd .
 # rm files if directory is not empty
 cd ${OBS_HOME}
 if [ `ls | wc -l` != 0 ]; then
     osc rm *.dsc *.tar.gz *.changes
 fi
-cd
+popd
+
+ls -la
 
 # copy our new files and send them to obs
 cp *.dsc *.tar.gz *.changes ${OBS_HOME}
